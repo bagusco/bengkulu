@@ -1,0 +1,40 @@
+#membaca data
+ilustrasi <- read.csv("D:/ilustrasikm.csv", header=T)
+head(ilustrasi)
+
+#menampilkan Within Sum of Squares hasil
+#k-means dengan 3 cluster
+hasilgerombol <- kmeans(ilustrasi, centers=3, iter.max =10)
+hasilgerombol$tot.withinss
+
+#menampilkan plot Within Sum of Squares
+#untuk 2 hingga 10 cluster
+wssplot <- function(data, nc=15, seed=1234){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")}
+
+wssplot(ilustrasi, nc=10) 
+
+
+
+library("cluster")
+jarak <- as.matrix(dist(ilustrasi))
+
+#menampilkan silhouette coef hasil k-means
+#dengan 3 cluster
+hasilgerombol <- kmeans(ilustrasi, centers=3, iter.max =10)
+sil.3 <- mean(silhouette(hasilgerombol$cluster,dmatrix=jarak)[,3])
+sil.3
+
+#menampilkan plot silhouette coef hasil k-means
+#dengan 2 hingga 10 cluster
+siluet <- NULL
+for (nc in 2:10){
+hasilgerombol <- kmeans(ilustrasi, centers=nc, iter.max =10)
+siluet[nc] <- mean(silhouette(hasilgerombol$cluster,dmatrix=jarak)[,3])
+}
+plot(1:10, siluet, type="b")
